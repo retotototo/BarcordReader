@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d2f3d" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Barcode Reader" />
+    <meta name="referrer" content="no-referrer" />
+    <title>バーコード解析リーダー</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="scanner-card" aria-labelledby="scanner-title">
+        <div class="scanner-heading">
+          <h2 id="scanner-title">バーコード読み取り</h2>
+          <span id="status" class="status" role="status">画像を選択またはカメラを開始</span>
+        </div>
+
+        <div id="interactive" class="viewport" aria-label="スキャンプレビュー">
+          <video id="video" playsinline muted autoplay style="display: none;"></video>
+          <img id="image-preview" alt="画像プレビュー" style="display: none;" />
+          <div id="placeholder" class="camera-placeholder">
+            <p class="placeholder-title">下のボタンから選択してください</p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="file-select-button" class="primary" type="button">📁 画像を選択</button>
+          <button id="start-button" type="button">📷 カメラを開始</button>
+          <button id="stop-button" type="button" disabled>停止</button>
+          <input type="file" id="file-input" accept="image/*" style="display: none;" />
+        </div>
+      </section>
+
+      <section class="result-card" aria-live="polite">
+        <!-- 内部処理用の隠しフィールド -->
+        <input id="result" type="hidden" value="" />
+
+        <!-- カードラボ直接埋め込みプレビュー枠（PC向け） -->
+        <div id="product-preview-wrapper" class="product-preview-wrapper" style="display: none;">
+          <div class="iframe-preview-header">
+            <span class="preview-badge">🛍️ カードラボ検索結果</span>
+            <button id="iframe-toggle-btn" class="iframe-toggle-btn" type="button" title="表示位置を切り替え">
+              ↕️ 検索結果フォーカス
+            </button>
+          </div>
+          
+          <div class="iframe-container">
+            <div id="iframe-loading" class="iframe-loading-overlay">
+              <span class="spinner"></span> カードラボの検索結果を読み込み中…
+            </div>
+            <iframe
+              id="cardlabo-frame"
+              class="cardlabo-iframe"
+              title="カードラボ検索結果"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+            ></iframe>
+          </div>
+        </div>
+
+        <div class="search-action-wrapper">
+          <button id="search-button" class="btn btn-search" type="button" disabled>
+            🔍 カードラボで検索して開く
+          </button>
+        </div>
+
+        <p id="result-message" class="result-message">まだ読み取られていません</p>
+      </section>
+
+      <!-- スキャン履歴セクション -->
+      <section class="history-card" aria-labelledby="history-title">
+        <div class="history-header">
+          <div>
+            <p class="eyebrow">SCAN LOG</p>
+            <h2 id="history-title">スキャン履歴 (<span id="history-count">0</span>件)</h2>
+          </div>
+          <div class="history-actions">
+            <button id="clear-history-btn" class="history-btn danger" type="button" title="履歴を全消去">
+              🗑️ 履歴をクリア
+            </button>
+          </div>
+        </div>
+
+        <div class="history-table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th style="width: 75px;">時刻</th>
+                <th>コード</th>
+                <th style="width: 90px; text-align: center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="history-list">
+              <tr class="empty-history-row">
+                <td colspan="3" style="text-align: center; color: #94a3b8; padding: 20px;">
+                  スキャン履歴はまだありません
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- バーコード解析用ライブラリ (ZXing) -->
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,356 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #16313d;
+  background: #eef5f4;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; min-width: 320px; }
+
+.app-shell { 
+  width: min(100% - 32px, 720px); 
+  margin: 0 auto; 
+  padding: max(24px, env(safe-area-inset-top)) 0 max(48px, env(safe-area-inset-bottom)); 
+}
+h1, h2, p { margin-top: 0; }
+h2 { margin-bottom: 14px; font-size: 1.1rem; }
+.eyebrow { margin-bottom: 8px; color: #0c7782; font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
+
+.scanner-card, .result-card { margin-top: 20px; padding: 20px; border: 1px solid #d9e6e4; border-radius: 18px; background: #fff; box-shadow: 0 12px 35px #17414b10; }
+.scanner-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.scanner-heading h2 { margin: 0; }
+.status { padding: 5px 9px; border-radius: 999px; background: #edf4f3; color: #526b72; font-size: .78rem; white-space: nowrap; }
+.status.active { background: #dff6e5; color: #176534; }
+.status.error { background: #ffebe7; color: #a43c27; }
+
+.viewport {
+  position: relative;
+  display: grid;
+  min-height: 260px;
+  max-height: 420px;
+  margin-top: 18px;
+  overflow: hidden;
+  place-items: center;
+  border: 2px dashed transparent;
+  border-radius: 12px;
+  background: #173c46;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.viewport.dragover {
+  border-color: #0c7782;
+  background: #122e36;
+}
+.camera-placeholder {
+  padding: 24px;
+  color: #d7e4e5;
+  text-align: center;
+}
+.placeholder-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.viewport video, .viewport img {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  max-height: 420px;
+  display: block;
+  object-fit: contain;
+  background: #10262c;
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.actions button { flex: 1 1 calc(50% - 10px); min-width: 120px; }
+button { min-height: 44px; padding: 0 16px; border: 1px solid #b8ccca; border-radius: 9px; background: #fff; color: #16313d; font: inherit; font-weight: 700; cursor: pointer; }
+button.primary { border-color: #0c7782; background: #0c7782; color: #fff; }
+button:disabled { cursor: not-allowed; opacity: .48; }
+button:not(:disabled):hover { filter: brightness(.94); }
+.hint, .result-message { margin: 12px 0 0; color: #637a80; font-size: .88rem; line-height: 1.5; }
+
+.search-action-wrapper {
+  margin-top: 14px;
+}
+.btn-search,
+.search-button {
+  width: 100%;
+  min-height: 48px;
+  background-color: #0284c7;
+  border: 1px solid #0284c7;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s, filter 0.2s;
+}
+.btn-search:not(:disabled):hover,
+.search-button:not(:disabled):hover {
+  background-color: #0369a1;
+  border-color: #0369a1;
+}
+.btn-search:disabled,
+.search-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* カードラボ検索結果プレビュー（PC向け） */
+.product-preview-wrapper {
+  margin-top: 16px;
+  scroll-margin-top: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.iframe-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.preview-badge {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #0369a1;
+  background: #e0f2fe;
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(18, 65, 75, 0.08);
+}
+
+.iframe-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(248, 250, 252, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #475569;
+  z-index: 10;
+  transition: opacity 0.2s ease;
+}
+
+/* カードラボのヘッダー・パンくずを飛ばして商品一覧を直フォーカス (-350px) */
+.cardlabo-iframe {
+  position: absolute;
+  top: -350px;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 350px);
+  border: none;
+  display: block;
+  transition: top 0.25s ease, height 0.25s ease;
+}
+
+/* 全体表示モード */
+.cardlabo-iframe.show-full {
+  top: 0;
+  height: 100%;
+}
+
+.iframe-toggle-btn {
+  background: none;
+  border: 1px solid #bae6fd;
+  color: #0284c7;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: auto;
+}
+.iframe-toggle-btn:hover {
+  background: #e0f2fe;
+}
+
+.spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #cbd5e1;
+  border-top-color: #0284c7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.raw-info-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 9px;
+  background: #f3f7f6;
+  border: 1px solid #e1ecea;
+}
+.info-item { display: flex; flex-direction: column; gap: 2px; }
+.info-label { font-size: 0.76rem; font-weight: 700; color: #526b72; text-transform: uppercase; }
+.info-value { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92rem; font-weight: 700; color: #16313d; overflow-wrap: anywhere; }
+
+/* スキャン履歴セクション */
+.history-card {
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid #d9e6e4;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 12px 35px #17414b10;
+}
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.history-header h2 {
+  margin: 0;
+}
+.history-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.history-btn {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+.history-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+.history-btn.danger {
+  color: #b91c1c;
+  border-color: #fecaca;
+  background: #fff5f5;
+}
+.history-btn.danger:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.history-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  max-height: 360px;
+}
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  text-align: left;
+}
+.history-table th {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 800;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.history-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+.history-table tr:hover td {
+  background: #f8fafc;
+}
+.history-time {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.history-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 800;
+  color: #0f172a;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.history-code:hover {
+  color: #0284c7;
+  text-decoration: underline;
+}
+.history-row-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.history-icon-btn {
+  min-height: 28px;
+  width: 28px;
+  padding: 0;
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+}
+.history-icon-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.history-icon-btn.delete:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+@media (max-width: 480px) {
+  .app-shell { width: min(100% - 24px, 720px); padding-top: 32px; }
+  .scanner-card, .result-card, .history-card { padding: 16px; border-radius: 14px; }
+  .scanner-heading, .history-header { align-items: flex-start; flex-direction: column; }
+  .raw-info-wrapper { grid-template-columns: 1fr; }
+}
