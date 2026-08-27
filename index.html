@@ -17,7 +17,10 @@
     <main class="app-shell">
       <section class="scanner-card" aria-labelledby="scanner-title">
         <div class="scanner-heading">
-          <h2 id="scanner-title">バーコード読み取り</h2>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h2 id="scanner-title">バーコード読み取り</h2>
+            <span class="version-badge">v1.0.0</span>
+          </div>
           <span id="status" class="status" role="status">画像を選択またはカメラを開始</span>
         </div>
 
@@ -106,6 +109,10 @@
           </table>
         </div>
       </section>
+
+      <footer class="app-footer">
+        <p>Barcode Reader <span class="app-version">ver 1.0.0</span></p>
+      </footer>
     </main>
 
     <!-- バーコード解析用ライブラリ (ZXing) -->
