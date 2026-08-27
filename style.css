@@ -348,6 +348,12 @@ button:not(:disabled):hover { filter: brightness(.94); }
   border-color: #fca5a5;
 }
 
+@media (max-width: 820px) {
+  .product-preview-wrapper {
+    display: none !important;
+  }
+}
+
 @media (max-width: 480px) {
   .app-shell { width: min(100% - 24px, 720px); padding-top: 32px; }
   .scanner-card, .result-card, .history-card { padding: 16px; border-radius: 14px; }
