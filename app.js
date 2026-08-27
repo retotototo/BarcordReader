@@ -111,7 +111,7 @@ function showCardLaboPreview(keyword) {
   cardlaboFrame.src = searchUrl;
 }
 
-// カードラボで検索ページを別タブで開く（スマホ・iOS Safari・ChromeのReferer漏れを100%遮断する確実な方式）
+// カードラボで検索ページを別タブで開く（open.html 経由で Referer を 100% 消去して開く）
 function openSearchPage(keywordOverride) {
   const keyword = keywordOverride || (resultInput ? resultInput.value.trim() : '');
   if (!keyword) {
@@ -119,10 +119,11 @@ function openSearchPage(keywordOverride) {
     return;
   }
   const searchUrl = `https://www.c-labo-online.jp/product-list?keyword=${encodeURIComponent(keyword)}`;
+  const dereferUrl = `./open.html?url=${encodeURIComponent(searchUrl)}`;
 
-  // aタグを動的生成して rel="noreferrer" と referrerpolicy を明示付与してクリック
+  // aタグを動的生成して rel="noreferrer" を付与してクリック
   const link = document.createElement('a');
-  link.href = searchUrl;
+  link.href = dereferUrl;
   link.target = '_blank';
   link.rel = 'noreferrer noopener nofollow';
   link.referrerPolicy = 'no-referrer';

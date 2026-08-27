@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="referrer" content="never" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>カードラボへ移動中…</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 40px 20px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        text-align: center;
+        background-color: #f8fafc;
+        color: #334155;
+      }
+      .loader {
+        margin: 30px auto 16px;
+        width: 32px;
+        height: 32px;
+        border: 3px solid #cbd5e1;
+        border-top-color: #0284c7;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .manual-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #0284c7;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loader"></div>
+    <p>カードラボの検索結果を開いています…</p>
+    <p><a id="fallback-link" class="manual-link" rel="noreferrer noopener" referrerpolicy="no-referrer" style="display: none;">自動で開かない場合はこちらをタップ</a></p>
+
+    <script>
+      (function() {
+        // URLパラメータからターゲットURLを取得
+        const params = new URLSearchParams(window.location.search);
+        const targetUrl = params.get('url');
+
+        if (!targetUrl) {
+          document.body.innerHTML = '<p>URLが指定されていません。</p>';
+          return;
+        }
+
+        const fallbackLink = document.getElementById('fallback-link');
+        if (fallbackLink) {
+          fallbackLink.href = targetUrl;
+          setTimeout(function() {
+            fallbackLink.style.display = 'inline-block';
+          }, 1500);
+        }
+
+        // 親ウィンドウの参照を完全に切断
+        window.opener = null;
+
+        // Refererを完全に消去して即座にリダイレクト
+        try {
+          window.location.replace(targetUrl);
+        } catch (e) {
+          window.location.href = targetUrl;
+        }
+      })();
+    </script>
+  </body>
+</html>
